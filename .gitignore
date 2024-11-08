@@ -161,5 +161,10 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+# folders
+screenshots
+unet_segmentation_train
+
+# filetypes
 *.mp4
 *.mov
