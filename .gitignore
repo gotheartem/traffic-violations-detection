@@ -168,3 +168,4 @@ unet_segmentation_train
 # filetypes
 *.mp4
 *.mov
+*.safetensors
