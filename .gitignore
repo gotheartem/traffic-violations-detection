@@ -163,3 +163,7 @@ cython_debug/
 
 *.mp4
 *.mov
+
+*.zip
+
+yolo*/data
