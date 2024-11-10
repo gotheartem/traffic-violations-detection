@@ -1,35 +1,60 @@
 import streamlit as st
 import pandas as pd
-from io import StringIO
-import requests
+import ffmpeg
+import tempfile
+import os
 
+# Function to convert video bytes to MP4
+def convert_to_mp4(input_video_bytes, input_format):
+    # Write input video bytes to a temporary file
+    with tempfile.NamedTemporaryFile(delete=False, suffix=f".{input_format}") as temp_input_file:
+        temp_input_file.write(input_video_bytes)
+        temp_input_path = temp_input_file.name
 
-def model(data):
-    pass
+    # Define the output path for the converted mp4 file
+    temp_output_path = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4").name
 
+    # Use ffmpeg to convert the video to mp4
+    try:
+        ffmpeg.input(temp_input_path).output(temp_output_path, vcodec='libx264', acodec='aac').run(quiet=True, overwrite_output=True)
+    except ffmpeg.Error as e:
+        st.error(f"Error converting video: {e}")
+        return None
 
-# Функция для загрузки видео
+    # Read the converted video bytes
+    with open(temp_output_path, 'rb') as output_file:
+        output_video_bytes = output_file.read()
+
+    # Clean up temporary files
+    os.remove(temp_input_path)
+    os.remove(temp_output_path)
+
+    return output_video_bytes
+
+# Function to load and display video
 def load_video():
-    uploaded_file = st.file_uploader('Выберите видео для детекции нарушений', type=['mp4', 'mov'])
+    uploaded_file = st.file_uploader('Выберите видео для детекции нарушений', type=['mp4', 'mov', 'wmv', 'avi', 'flv', 'mkv', 'webm', 'mpg', 'mts', 'swf'])
     if uploaded_file is not None:
-
+        input_format = uploaded_file.name.split('.')[-1]  # Get the file extension to determine the format
         video_bytes = uploaded_file.read()
 
-        start_time = 10
-        end_time = 20
+        # Convert the video to mp4 format
+        mp4_video_bytes = convert_to_mp4(video_bytes, input_format)
 
-        st.video(video_bytes, start_time=start_time, end_time=end_time)
+        if mp4_video_bytes:
+            # Display the converted video
+            st.video(mp4_video_bytes)
 
-        return uploaded_file.read()
+        return mp4_video_bytes
     return None
 
-
-# Функция для обращения к модели ИИ
+# Function to analyze the video (stub function)
 def analyze_video(video_data):
-    model(data=load_video)
+    # Placeholder for model analysis
+    st.write("Анализируем видео...")
+    return {'violations': [{'type': 'Speeding', 'timestamp': '00:01:23'}, {'type': 'Lane Change', 'timestamp': '00:02:45'}]}  # Example result
 
-
-# Основная функция приложения
+# Main function of the app
 def main():
     st.title("Анализ видео с помощью ИИ")
 
@@ -39,10 +64,10 @@ def main():
         if st.button("Анализировать видео"):
             results = analyze_video(video_data)
 
-            # Результат содержит список нарушений
+            # Result contains a list of violations
             violations = results.get('violations', [])
             if violations:
-                # Таблица
+                # Display results in a table
                 df = pd.DataFrame(violations)
                 st.write("Общее количество нарушений:", len(violations))
                 st.write("Типы нарушений:")
@@ -50,5 +75,5 @@ def main():
             else:
                 st.write("Нарушения не обнаружены")
 
-
-main()
+if __name__ == "__main__":
+    main()
