@@ -169,8 +169,6 @@ def analyze_video(video_data):
         submit_df.iloc[window_start:window_start+duration, submit_df.columns.get_loc('номер видео')] = [video_paths[idx].split(os.path.sep)[-1].split('.')[0]] * duration
         window_start = window_start + duration
 
-    submit_df[submit_df['наименование нарушения'] != 'nothing'].to_csv(SUBMISSION_PATH, index=False)
-
     s = submit_df[submit_df['наименование нарушения'] != 'nothing']
     violations = []
     for row in s[['наименование нарушения', 'время нарушения (в секундах)']].iterrows():
