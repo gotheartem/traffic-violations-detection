@@ -162,6 +162,7 @@ cython_debug/
 #.idea/
 
 # folders
+checkpoints
 screenshots
 unet_segmentation_train
 
