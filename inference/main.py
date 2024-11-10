@@ -30,7 +30,7 @@ from tqdm import tqdm
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # base paths
-ROOT_DIR = os.path.join(os.getcwd())
+ROOT_DIR = os.path.join(os.getcwd(), os.pardir)
 DATA_DIR = os.path.join(ROOT_DIR, 'data')
 TMP_VIDEOS_DIR = os.path.join(ROOT_DIR, 'inference', 'tmp')
 SUBMISSION_PATH = os.path.join(ROOT_DIR, 'submission.csv')
@@ -178,12 +178,7 @@ def analyze_video(video_data):
         time = row[1][1]
         violations.append({violation: time})
 
-    return {'violations': [{'type': 'Заезд за стоп-линию', 'timestamp': 10},
-                           {'type': 'Выезд на встречную полосу', 'timestamp': 20},
-                           {'type': 'Движение по полосам для автобусов/троллейбусов/трамваев и остановка на них', 'timestamp': 30},
-                           {'type': 'Нарушение знаков и разметки', 'timestamp': 40},
-                           {'type': 'Движение по полосам для автобусов/троллейбусов/трамваев и остановка на них', 'timestamp': 60},
-                           {'type': 'Поворот налево и разворот через сплошную или при нарушении знаков', 'timestamp': 80}]}
+    return {'violations': violations}
 
 
 def main():
