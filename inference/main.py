@@ -32,46 +32,65 @@ def convert_to_mp4(input_video_bytes, input_format):
     return output_video_bytes
 
 # Function to load and display video
-def load_video():
-    uploaded_file = st.file_uploader('Выберите видео для детекции нарушений', type=['mp4', 'mov', 'wmv', 'avi', 'flv', 'mkv', 'webm', 'mpg', 'mts', 'swf'])
+@st.cache_resource
+def load_video(uploaded_file):
     if uploaded_file is not None:
         input_format = uploaded_file.name.split('.')[-1]  # Get the file extension to determine the format
         video_bytes = uploaded_file.read()
 
-        # Convert the video to mp4 format
-        mp4_video_bytes = convert_to_mp4(video_bytes, input_format)
+        if input_format not in ['mp4', 'mov']:
+            # Convert the video to mp4 format
+            video_bytes = convert_to_mp4(video_bytes, input_format)
 
-        if mp4_video_bytes:
-            # Display the converted video
-            st.video(mp4_video_bytes)
-
-        return mp4_video_bytes
+        return video_bytes
     return None
 
 # Function to analyze the video (stub function)
 def analyze_video(video_data):
     # Placeholder for model analysis
     st.write("Анализируем видео...")
-    return {'violations': [{'type': 'Speeding', 'timestamp': '00:01:23'}, {'type': 'Lane Change', 'timestamp': '00:02:45'}]}  # Example result
+    return {'violations': [{'type': 'Speeding', 'timestamp': '00:01:23'}, 
+                           {'type': 'Lane Change', 'timestamp': '00:02:45'}, 
+                           {'type': 'Lane Change', 'timestamp': '00:02:45'}, 
+                           {'type': 'Lane Change', 'timestamp': '00:02:45'}, 
+                           {'type': 'Lane Change', 'timestamp': '00:02:45'}, 
+                           {'type': 'Lane Change', 'timestamp': '00:02:45'}, 
+                           {'type': 'Lane Change', 'timestamp': '00:02:45'}, 
+                           {'type': 'Lane Change', 'timestamp': '00:02:45'}, 
+                           {'type': 'Lane Change', 'timestamp': '00:02:45'}, 
+                           {'type': 'Lane Change', 'timestamp': '00:02:45'}]}  # Example result
 
 # Main function of the app
 def main():
     st.title("Анализ видео с помощью ИИ")
 
-    video_data = load_video()
+    uploaded_file = st.file_uploader('Выберите видео для детекции нарушений', type=['mp4', 'mov', 'wmv', 'avi', 'flv', 'mkv', 'webm', 'mpg', 'mts', 'swf'])
+    video_data = load_video(uploaded_file)
 
     if video_data:
+        st.video(video_data)
+
         if st.button("Анализировать видео"):
             results = analyze_video(video_data)
 
             # Result contains a list of violations
             violations = results.get('violations', [])
             if violations:
-                # Display results in a table
+                # Display results in a table with buttons in each row
                 df = pd.DataFrame(violations)
                 st.write("Общее количество нарушений:", len(violations))
                 st.write("Типы нарушений:")
-                st.dataframe(df)
+                
+                # Display DataFrame with buttons inline
+                for idx, row in df.iterrows():
+                    cols = st.columns([2, 2, 2])
+                    with cols[0]:
+                        st.write(row['type'])
+                    with cols[1]:
+                        st.write(row['timestamp'])
+                    with cols[2]:
+                        if st.button(f"Перейти к {row['timestamp']}", key=f"button_{idx}"):
+                            st.write(f"Переход к времени: {row['timestamp']} (здесь должна быть логика перехода в видео)")
             else:
                 st.write("Нарушения не обнаружены")
 
