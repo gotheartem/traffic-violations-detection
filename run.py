@@ -25,7 +25,7 @@ DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # base paths
 ROOT_DIR = os.path.join(os.getcwd())
 DATA_DIR = os.path.join(ROOT_DIR, 'data')
-VAL_VIDEOS_DIR = os.path.join(DATA_DIR, 'val_videos')
+TEST_VIDEOS_DIR = os.path.join(DATA_DIR, 'test_videos')
 SUBMISSION_PATH = os.path.join(ROOT_DIR, 'submission.csv')
 
 # checkpoints
@@ -57,7 +57,7 @@ yolo_traffic_lighs = YOLO(YOLO_TRAFFIC_LIGHTS_CHECKPOINT_PATH)
 
 # dataset
 dataset = Dataset(
-    vid_dir=VAL_VIDEOS_DIR,
+    vid_dir=TEST_VIDEOS_DIR,
     width=736,
     height=416,
     mask_encoder=unet,
@@ -82,12 +82,12 @@ with torch.no_grad():
 video_paths = []
 
 # get video paths
-for filename in os.listdir(VAL_VIDEOS_DIR):
+for filename in os.listdir(TEST_VIDEOS_DIR):
     # ignore txt
     if filename.endswith('.txt'):
         continue
 
-    video_path = os.path.join(VAL_VIDEOS_DIR, filename)
+    video_path = os.path.join(TEST_VIDEOS_DIR, filename)
     video_paths.append(video_path)
 
 label_encoder = dataset.encoder
