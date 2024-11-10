@@ -101,9 +101,9 @@ def main():
 
                 cols = st.columns([2, 2, 2])
                 with cols[0]:
-                    st.write("Тип")
+                    st.write("<b>Тип</b>", unsafe_allow_html=True)
                 with cols[1]:
-                    st.write("Время")
+                    st.write("<b>Время</b>", unsafe_allow_html=True)
                 with cols[2]:
                     pass
 
